@@ -1,13 +1,14 @@
 # Seleniumを使用したギフトコード自動送信
 
-このプロジェクトは、Selenium WebDriverを使用して、ウェブサイトにギフトコードを自動的に送信するプロセスを自動化します。スクリプトは、ファイルからユーザーIDを読み込み、各ユーザーのアカウントにあらかじめ定義されたギフトコードを送信します。
+このプロジェクトは、Selenium WebDriverを使用して、ウェブサイトにギフトコードを自動的に送信するプロセスを自動化します。また、指定されたDiscordチャンネルから最新のギフトコードを自動的に取得し、それを使用して送信プロセスを行うことができます。
 
 ## 目次
-- [前提条件](#前提条件)
-- [インストール](#インストール)
-- [使い方](#使い方)
-- [ファイル](#ファイル)
-- [トラブルシューティング](#トラブルシューティング)
+- 前提条件
+- インストール
+- 使い方
+- ファイル
+- シーケンス図
+- トラブルシューティング
 
 ## 前提条件
 
@@ -21,35 +22,56 @@
 
 1. **リポジトリをクローンします：**
 
-   ```bash
-   git clone <リポジトリURL>
-   cd <リポジトリディレクトリ>
-   ```
+```bash
+git clone <リポジトリURL> cd <リポジトリディレクトリ>
+```
 
 2. **必要なPythonパッケージをインストールします：**
 
-    pipを使用して、必要な依存関係をインストールします：
-    ```bash
-    pip install selenium
-    ```
+pipを使用して、必要な依存関係をインストールします：
+
+```bash
+pip install selenium
+```
 
 3. **ChromeDriverのパスを設定します：**
 
-    スクリプト内のchromedriverパスを更新します：
-    ```python
-    chrome_driver_path = '/opt/homebrew/bin/chromedriver'  # 必要に応じてこのパスを更新してください
-    ```
+スクリプト内のchromedriverパスを更新します：
+
+```python
+chrome_driver_path = '/opt/homebrew/bin/chromedriver' # 必要に応じてこのパスを更新してください
+```
+
 
 ## 使い方
 
-### IDとギフトコードファイルを準備します
+### 1. IDとギフトコードファイルを準備します
 
-- **`id.txt`**: ユーザーIDが1行ごとに記載されたテキストファイル。
-- **`gitcode.txt`**: 適用するギフトコードが記載されたテキストファイル。
+- **id.txt**: ユーザーIDが1行ごとに記載されたテキストファイル。
+- **gitcode.txt**: 適用するギフトコードが記載されたテキストファイル。
 
 これらのファイルをスクリプトと同じディレクトリに配置してください。
 
-### スクリプトを実行します
+### 2. Discordからギフトコードを取得する
+
+`get_gitcode_from_discode.py` を使用して、指定されたDiscordチャンネルから最新のギフトコードを自動的に取得し、`gitcode.txt`に保存します。
+
+**Discordのログイン情報を準備します**:
+
+- **login_info.txt**: Discordのログイン情報を記載するテキストファイル。
+- 構成例:
+  - EMAIL=your_email@example.com
+  - PASSWORD=your_password
+
+以下のコマンドでPythonスクリプトを実行します：
+
+```bash
+python get_gitcode_from_discode.py
+```
+
+### 3. ギフトコード送信スクリプトを実行します
+
+Discordからギフトコードを取得した後、`selenium_script.py` を実行して、IDに対してギフトコードを送信します。
 
 以下のコマンドでPythonスクリプトを実行します：
 
@@ -63,22 +85,32 @@ python selenium_script.py
 
 ## ファイル
 
-- **`selenium_script.py`**: ギフトコード送信プロセスを自動化するメインスクリプト。
-- **`id.txt`**: ユーザーIDが記載されたテキストファイル。
-- **`gitcode.txt`**: ギフトコードが記載されたテキストファイル。
+- **get_gitcode_from_discode.py**: Discordチャンネルから最新のギフトコードを取得し、`gitcode.txt`に保存するスクリプト。
+- **selenium_script.py**: ギフトコード送信プロセスを自動化するメインスクリプト。
+- **login_info.txt**: Discordのログイン情報を記載するテキストファイル。
+- **id.txt**: ユーザーIDが記載されたテキストファイル。
+- **gitcode.txt**: ギフトコードが記載されたテキストファイル。
 
 ## シーケンス図
 
-以下のシーケンス図は、ギフトコード送信プロセスの手順を示しています。
+以下のシーケンス図は、ギフトコード取得および送信プロセスの手順を示しています。
 
 ```mermaid
 sequenceDiagram
     participant User
     participant Script as Selenium Script
+    participant Discord as Discord Channel
+    participant File as gitcode.txt
     participant Browser as Web Browser
     participant Website as Giftcode Website
 
-    User->>Script: Run python selenium_script.py
+    User->>Script: Run get_gitcode_from_discode.py
+    Script->>Discord: Log in and navigate to channel
+    Discord->>Script: Load the latest messages
+    Script->>Script: Extract gift code from message
+    Script->>File: Save the extracted code to gitcode.txt
+
+    User->>Script: Run selenium_script.py
     Script->>Script: Read ID and giftcode files
     Script->>Browser: Launch Web Browser
     Browser->>Website: Navigate to Giftcode Website
