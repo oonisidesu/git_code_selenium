@@ -68,23 +68,25 @@ python selenium_script.py
 - **`id.txt`**: ユーザーIDが記載されたテキストファイル。
 - **`gitcode.txt`**: ギフトコードが記載されたテキストファイル。
 
-## フローチャート
+## シーケンス図
+
+以下のシーケンス図は、ギフトコード送信プロセスの手順を示しています。
 
 ```mermaid
-graph TD
-    A[開始] --> B[IDとギフトコードの読み込み]
-    B --> C[Chromeブラウザの起動]
-    C --> D[ループ: 各IDに対して]
-    D --> E[ID入力]
-    E --> F[ギフトコード入力]
-    F --> G[送信ボタンをクリック]
-    G --> H{成功/失敗の確認}
-    H -->|成功| I[次のIDへ]
-    H -->|失敗| J[エラーログを出力し次のIDへ]
-    I --> K[終了]
-    J --> K[終了]
-    K --> L[ブラウザを閉じる]
-```
+sequenceDiagram
+    participant User
+    participant Script as Selenium Script
+    participant Browser as Web Browser
+    participant Website as Giftcode Website
+
+    User->>Script: Run python selenium_script.py
+    Script->>Script: Read ID and giftcode files
+    Script->>Browser: Launch Web Browser
+    Browser->>Website: Navigate to Giftcode Website
+    Script->>Website: Enter ID and Giftcode
+    Script->>Website: Click Submit
+    Website-->>Script: Return success/failure response
+    Script->>User: Display Result
 
 ## トラブルシューティング
 
