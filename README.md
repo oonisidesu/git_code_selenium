@@ -87,6 +87,7 @@ sequenceDiagram
     Script->>Website: Click Submit
     Website-->>Script: Return success/failure response
     Script->>User: Display Result
+```
 
 ## トラブルシューティング
 
