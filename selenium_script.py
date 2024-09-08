@@ -12,8 +12,8 @@ chrome_driver_path = '/opt/homebrew/bin/chromedriver'  # chromedriverのパス�
 with open('id.txt', 'r') as id_file:
     ids = id_file.readlines()
 
-# gitcode.txtからギフトコードを1つ読み込みます
-with open('gitcode.txt', 'r') as code_file:
+# giftcode.txtからギフトコードを1つ読み込みます
+with open('giftcode.txt', 'r') as code_file:
     gift_code = code_file.readline().strip()
 
 # IDのリストから改行を取り除きます
